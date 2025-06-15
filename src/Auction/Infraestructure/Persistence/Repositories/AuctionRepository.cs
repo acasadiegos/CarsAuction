@@ -27,7 +27,7 @@ public class AuctionRepository : IAuctionRepository
                         .Include(a => a.Item)
                         .AsNoTracking();
 
-        foreach ( var filter in baseFilter.Filters)
+        foreach (var filter in baseFilter.Filters)
         {
             int numFilterValue = 0;
 
@@ -73,7 +73,7 @@ public class AuctionRepository : IAuctionRepository
             var startDateUtc = DateTime.SpecifyKind(Convert.ToDateTime(baseFilter.StartDate), DateTimeKind.Utc);
             var endDateUtc = DateTime.SpecifyKind(Convert.ToDateTime(baseFilter.EndDate).AddDays(1), DateTimeKind.Utc);
 
-            auctions = auctions.Where(a => a.CreatedAt >= startDateUtc
+            auctions = auctions.Where(a => a.UpdatedAt > startDateUtc
                                             && a.CreatedAt <= endDateUtc);
         }
 
