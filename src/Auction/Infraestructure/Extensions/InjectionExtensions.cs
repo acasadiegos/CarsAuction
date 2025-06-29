@@ -1,6 +1,9 @@
+using Infraestructure.Messaging.Interfaces;
+using Infraestructure.Messaging.Publishers;
 using Infraestructure.Persistence.Contexts;
 using Infraestructure.Persistence.Interfaces;
 using Infraestructure.Persistence.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,8 +21,26 @@ public static class InjectionExtensions {
                 configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(assembly)), ServiceLifetime.Scoped
         );
 
+        services.AddMassTransit(x =>
+        {
+            x.AddEntityFrameworkOutbox<AuctionDbContext>(o =>
+            {
+                o.QueryDelay = TimeSpan.FromSeconds(10);
+
+                o.UsePostgres();
+                o.UseBusOutbox();
+
+            });
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuctionRepository, AuctionRepository>();
+        services.AddScoped<IMessagerPublisher, MessagerPublisher>();
 
         return services;
     }

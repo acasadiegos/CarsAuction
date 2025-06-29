@@ -7,6 +7,9 @@ using Infraestructure.Services.Client.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Polly.Extensions.Http;
 using Polly;
+using MassTransit;
+using System.Reflection;
+using Infraestructure.Messaging.Consumers;
 
 namespace Infraestructure.Extensions
 {
@@ -14,7 +17,20 @@ namespace Infraestructure.Extensions
     {
         public static IServiceCollection AddInjectionInfraestructure(this IServiceCollection services)
         {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
 
+                x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
+            
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IItemService, ItemService>();

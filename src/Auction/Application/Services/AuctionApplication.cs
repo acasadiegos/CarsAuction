@@ -8,7 +8,8 @@ using Infraestructure.Commons.Bases.Response;
 using Infraestructure.Persistence.Interfaces;
 using Domain.Entities;
 using Application.Validators.Auction;
-using FluentValidation;
+using Infraestructure.Messaging.Interfaces;
+using Contracts;
 
 namespace Application.Services
 {
@@ -18,14 +19,16 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly CreateAuctionValidator _createAuctionValidator;
         private readonly UpdateAuctionValidator _updateAuctionValidator;
+        private readonly IMessagerPublisher _messagerPublisher;
 
         public AuctionApplication(IUnitOfWork unitOfWork, IMapper mapper, CreateAuctionValidator createAuctionValidator,
-            UpdateAuctionValidator updateAuctionValidator)
+            UpdateAuctionValidator updateAuctionValidator, IMessagerPublisher messagerPublisher)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _createAuctionValidator = createAuctionValidator;
             _updateAuctionValidator = updateAuctionValidator;
+            _messagerPublisher = messagerPublisher;
         }
 
         public async Task<BaseResponse<BaseEntityResponse<AuctionDto>>> ListAuctions(BaseFiltersRequest filters)
@@ -86,10 +89,17 @@ namespace Application.Services
 
             var auction = _mapper.Map<Auction>(createAuctionDto);
 
-            response.Data = await _unitOfWork.Auction.CreateAuction(auction);
+            await _unitOfWork.Auction.CreateAuction(auction);
 
-            if(response.Data)
+            var auctionDto = _mapper.Map<AuctionDto>(auction);
+            var auctionCreated = _mapper.Map<AuctionCreated>(auctionDto);
+
+            response.Data = await _unitOfWork.SaveChangesAsync();
+
+
+            if (response.Data)
             {
+                await _messagerPublisher.PublishAsync(auctionCreated);
                 response.IsSuccess = true;
                 response.Message = ReplyMessage.MESSAGE_SAVE;
             }
@@ -97,8 +107,9 @@ namespace Application.Services
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_FAILED;
+                return response;
             }
-
+            
             return response;
         }
 

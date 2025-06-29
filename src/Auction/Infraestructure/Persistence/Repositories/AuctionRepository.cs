@@ -94,13 +94,10 @@ public class AuctionRepository : IAuctionRepository
                         .FirstOrDefaultAsync(x => x.Id == auctionId);
     }
 
-    public async Task<bool> CreateAuction(Auction auction)
+    public async Task CreateAuction(Auction auction)
     {
         await _context.Auctions.AddAsync(auction);
-        var recordsAffected = await _context.SaveChangesAsync();
-        _context.ChangeTracker.Clear();
-        return recordsAffected > 0;
-    }
+    }   
 
     public async Task<bool> UpdateAuction(Auction auction)
     {

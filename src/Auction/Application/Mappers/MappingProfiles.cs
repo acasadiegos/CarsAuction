@@ -1,6 +1,6 @@
-using System;
 using Application.DTOs;
 using AutoMapper;
+using Contracts;
 using Domain.Entities;
 using Infraestructure.Commons.Bases.Response;
 
@@ -27,5 +27,6 @@ public class MappingProfiles : Profile
         CreateMap<UpdateAuctionDto, Item>();
         CreateMap<BaseEntityResponse<Auction>, BaseEntityResponse<AuctionDto>>()
         .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+        CreateMap<AuctionDto, AuctionCreated>();
     }
 }

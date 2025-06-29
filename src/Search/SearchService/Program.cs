@@ -30,8 +30,6 @@ internal class Program
             }
         });
 
-
-
         //Configure the HTTP request pipeline.
 
         app.UseAuthorization();

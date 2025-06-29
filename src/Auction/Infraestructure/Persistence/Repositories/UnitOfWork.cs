@@ -23,8 +23,10 @@ public class UnitOfWork : IUnitOfWork
         _context.SaveChanges();
     }
 
-    public async Task SaveChangesAsync()
+    public async Task<bool> SaveChangesAsync()
     {
-        await _context.SaveChangesAsync();
+        var recordsAffected = await _context.SaveChangesAsync();
+        _context.ChangeTracker.Clear();
+        return recordsAffected > 0;
     }
 }
