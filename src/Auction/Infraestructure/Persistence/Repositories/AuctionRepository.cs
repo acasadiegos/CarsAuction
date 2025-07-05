@@ -99,20 +99,14 @@ public class AuctionRepository : IAuctionRepository
         await _context.Auctions.AddAsync(auction);
     }   
 
-    public async Task<bool> UpdateAuction(Auction auction)
+    public void UpdateAuction(Auction auction)
     {
         _context.Update(auction);
-        var recordsAffected = await _context.SaveChangesAsync();
-        _context.ChangeTracker.Clear();
-        return recordsAffected > 0;
     }
 
-    public async Task<bool> DeleteAuction(Auction auction)
+    public void DeleteAuction(Auction auction)
     {
         _context.Remove(auction);
-        var recordsAffected = await _context.SaveChangesAsync();
-        _context.ChangeTracker.Clear();
-        return recordsAffected > 0;
     }
 
     public IQueryable<TDTO> Ordering<TDTO>(BasePaginationRequest request, IQueryable<TDTO> queryable, bool pagination = false) where TDTO : class

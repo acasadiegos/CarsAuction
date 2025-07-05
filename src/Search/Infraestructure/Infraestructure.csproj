@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Persistence\Data\" />
+    <Folder Include="Persistence\Interfaces\bl\" />
   </ItemGroup>
 
 </Project>

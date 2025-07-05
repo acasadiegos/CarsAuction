@@ -9,7 +9,7 @@ namespace Infraestructure.Persistence.Interfaces
         public Task<BaseEntityResponse<Auction>> ListAuctions(BaseFiltersRequest baseFilter);
         public Task<Auction> GetAuctionById(Guid auctionId);
         public Task CreateAuction(Auction auction);
-        public Task<bool> UpdateAuction(Auction auction);
-        public Task<bool> DeleteAuction(Auction auction);
+        public void UpdateAuction(Auction auction);
+        public void DeleteAuction(Auction auction);
     }
 }

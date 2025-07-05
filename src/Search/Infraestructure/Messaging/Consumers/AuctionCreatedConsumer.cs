@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Domain.Models;
+using Infraestructure.Persistence.Interfaces;
 using MassTransit;
 using MongoDB.Entities;
 
@@ -9,10 +10,12 @@ namespace Infraestructure.Messaging.Consumers
     public class AuctionCreatedConsumer : IConsumer<AuctionCreated>
     {
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AuctionCreatedConsumer(IMapper mapper)
+        public AuctionCreatedConsumer(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
         public async Task Consume(ConsumeContext<AuctionCreated> context)
         {
@@ -20,7 +23,7 @@ namespace Infraestructure.Messaging.Consumers
 
             var item = _mapper.Map<Item>(context.Message);
 
-            await item.SaveAsync();
+            await _unitOfWork.ItemRepository.SaveItem(item);
         }
     }
 }

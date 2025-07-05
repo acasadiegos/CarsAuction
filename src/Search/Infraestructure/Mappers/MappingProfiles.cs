@@ -9,6 +9,7 @@ namespace Infraestructure.Mappers
         public MappingProfiles()
         {
             CreateMap<AuctionCreated, Item>();
+            CreateMap<AuctionUpdated, Item>();
         }
     }
 }

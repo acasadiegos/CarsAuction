@@ -28,5 +28,6 @@ public class MappingProfiles : Profile
         CreateMap<BaseEntityResponse<Auction>, BaseEntityResponse<AuctionDto>>()
         .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         CreateMap<AuctionDto, AuctionCreated>();
+        CreateMap<Auction, AuctionUpdated>().IncludeMembers(a => a.Item);
     }
 }

@@ -3,7 +3,9 @@ using Infraestructure.Commons.Bases.Request;
 using Infraestructure.Commons.Bases.Response;
 using Infraestructure.Helpers;
 using Infraestructure.Persistence.Interfaces;
+using MongoDB.Driver;
 using MongoDB.Entities;
+using Polly;
 
 namespace Infraestructure.Persistence.Repositories
 {
@@ -106,6 +108,32 @@ namespace Infraestructure.Persistence.Repositories
                 .Sort(x => x.Descending(x => x.UpdatedAt))
                 .Project(x => x.UpdatedAt.ToString())
                 .ExecuteFirstAsync();
+        }
+
+        public async Task SaveItem(Item item)
+        {
+            await item.SaveAsync();
+        }
+
+        public async Task<UpdateResult> UpdateItem(string id, Item item)
+        {
+            return await DB.Update<Item>()
+                            .Match(a => a.ID == id)
+                            .ModifyOnly(x => new
+                            {
+                                x.Color,
+                                x.Make,
+                                x.Model,
+                                x.Year,
+                                x.Mileage,
+                            }, item)
+                            .ExecuteAsync();
+
+        }
+
+        public async Task<DeleteResult> DeleteItem(string id)
+        {
+            return await DB.DeleteAsync<Item>(id);
         }
     }
 }

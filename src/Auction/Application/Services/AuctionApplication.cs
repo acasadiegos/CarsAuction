@@ -94,12 +94,12 @@ namespace Application.Services
             var auctionDto = _mapper.Map<AuctionDto>(auction);
             var auctionCreated = _mapper.Map<AuctionCreated>(auctionDto);
 
-            response.Data = await _unitOfWork.SaveChangesAsync();
+            await _messagerPublisher.PublishAsync(auctionCreated);
 
+            response.Data = await _unitOfWork.SaveChangesAsync();
 
             if (response.Data)
             {
-                await _messagerPublisher.PublishAsync(auctionCreated);
                 response.IsSuccess = true;
                 response.Message = ReplyMessage.MESSAGE_SAVE;
             }
@@ -138,7 +138,13 @@ namespace Application.Services
 
             _mapper.Map(updateAuctionDto, auction.Item);
 
-            response.Data = await _unitOfWork.Auction.UpdateAuction(auction);
+            _unitOfWork.Auction.UpdateAuction(auction);
+
+            var auctionUpdated = _mapper.Map<AuctionUpdated>(auction);
+
+            await _messagerPublisher.PublishAsync(auctionUpdated);
+
+            response.Data = await _unitOfWork.SaveChangesAsync();
 
             if(response.Data)
             {
@@ -167,7 +173,11 @@ namespace Application.Services
                 return response;
             }
 
-            response.Data = await _unitOfWork.Auction.DeleteAuction(auction);
+            _unitOfWork.Auction.DeleteAuction(auction);
+
+            await _messagerPublisher.PublishAsync(new AuctionDeleted { Id = auction.Id.ToString() });
+
+            response.Data = await _unitOfWork.SaveChangesAsync();
 
             if (response.Data)
             {
