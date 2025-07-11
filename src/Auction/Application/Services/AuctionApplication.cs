@@ -10,6 +10,8 @@ using Domain.Entities;
 using Application.Validators.Auction;
 using Infraestructure.Messaging.Interfaces;
 using Contracts;
+using FluentValidation.Results;
+using System.Net;
 
 namespace Application.Services
 {
@@ -49,6 +51,8 @@ namespace Application.Services
                 response.Message = ReplyMessage.MESSAGE_QUERY_EMPTY;
             }
 
+            response.StatusCode = HttpStatusCode.OK;
+
             return response;
         }
 
@@ -63,17 +67,19 @@ namespace Application.Services
                 response.IsSuccess = true;
                 response.Data = _mapper.Map<AuctionDto>(auction);
                 response.Message = ReplyMessage.MESSAGE_QUERY;
+                response.StatusCode = HttpStatusCode.OK;
             }
             else
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_QUERY_EMPTY;
+                response.StatusCode = HttpStatusCode.NotFound;
             }
 
             return response;
         }
 
-        public async Task<BaseResponse<bool>> CreateAuction(CreateAuctionDto createAuctionDto)
+        public async Task<BaseResponse<bool>> CreateAuction(CreateAuctionDto createAuctionDto, string seller)
         {
             var response = new BaseResponse<bool>();
 
@@ -84,10 +90,12 @@ namespace Application.Services
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_VALIDATE;
                 response.Errors = validationResult.Errors;
+                response.StatusCode = HttpStatusCode.BadRequest;
                 return response;
             }
 
             var auction = _mapper.Map<Auction>(createAuctionDto);
+            auction.Seller = seller;
 
             await _unitOfWork.Auction.CreateAuction(auction);
 
@@ -102,18 +110,20 @@ namespace Application.Services
             {
                 response.IsSuccess = true;
                 response.Message = ReplyMessage.MESSAGE_SAVE;
+                response.StatusCode = HttpStatusCode.Created;
             }
             else
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_FAILED;
+                response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
             }
             
             return response;
         }
 
-        public async Task<BaseResponse<bool>> UpdateAuction(Guid auctionId, UpdateAuctionDto updateAuctionDto)
+        public async Task<BaseResponse<bool>> UpdateAuction(Guid auctionId, UpdateAuctionDto updateAuctionDto, string username)
         {
             var response = new BaseResponse<bool>();
 
@@ -123,6 +133,15 @@ namespace Application.Services
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_QUERY_EMPTY;
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
+            if(auction.Seller != username)
+            {
+                response.IsSuccess = false;
+                response.Message = ReplyMessage.MESSAGE_FORBID;
+                response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
 
@@ -133,6 +152,7 @@ namespace Application.Services
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_VALIDATE;
                 response.Errors = validationResult.Errors;
+                response.StatusCode = HttpStatusCode.BadRequest;
                 return response;
             }
 
@@ -150,11 +170,13 @@ namespace Application.Services
             {
                 response.IsSuccess = true;
                 response.Message = ReplyMessage.MESSAGE_UPDATE;
+                response.StatusCode = HttpStatusCode.OK;
             }
             else
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_FAILED;
+                response.StatusCode = HttpStatusCode.InternalServerError;
             }
 
             return response;
@@ -170,6 +192,7 @@ namespace Application.Services
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_QUERY_EMPTY;
+                response.StatusCode = HttpStatusCode.NotFound;
                 return response;
             }
 
@@ -183,12 +206,14 @@ namespace Application.Services
             {
                 response.IsSuccess = true;
                 response.Message = ReplyMessage.MESSAGE_DELETE;
+                response.StatusCode = HttpStatusCode.OK;
                 return response;
             }
             else
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_FAILED;
+                response.StatusCode = HttpStatusCode.InternalServerError;
             }
 
             return response;

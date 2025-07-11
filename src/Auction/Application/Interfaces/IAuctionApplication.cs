@@ -9,8 +9,8 @@ namespace Application.Interfaces
     {
         public Task<BaseResponse<BaseEntityResponse<AuctionDto>>> ListAuctions(BaseFiltersRequest filters);
         public Task<BaseResponse<AuctionDto>> GetAuctionById(Guid auctionId);
-        public Task<BaseResponse<bool>> CreateAuction(CreateAuctionDto createAuctionDto);
-        public Task<BaseResponse<bool>> UpdateAuction(Guid auctionId, UpdateAuctionDto updateAuctionDto);
+        public Task<BaseResponse<bool>> CreateAuction(CreateAuctionDto createAuctionDto, string seller);
+        public Task<BaseResponse<bool>> UpdateAuction(Guid auctionId, UpdateAuctionDto updateAuctionDto, string username);
         public Task<BaseResponse<bool>> DeleteAuction(Guid auctionId);
     }
 }
