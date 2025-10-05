@@ -5,6 +5,7 @@ using Application.Messaging.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
 using Infraestructure.Logging;
+using Infraestructure.Messaging.Consumers;
 using Infraestructure.Messaging.Publishers;
 using Infraestructure.Persistence.Contexts;
 using Infraestructure.Persistence.Repositories;
@@ -51,6 +52,8 @@ public static class InjectionExtensions {
                 o.UseBusOutbox();
 
             });
+
+            x.AddConsumersFromNamespaceContaining<AuctionFinishedConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {

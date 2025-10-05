@@ -94,6 +94,11 @@ namespace Infraestructure.Persistence.Repositories
 
         }
 
+        public async Task<Item> GetItemByAuctionId(string auctionId)
+        {
+            return await DB.Find<Item>().OneAsync(auctionId);
+        }
+
         public async Task<string> GetLastUpdatedDateString()
         {
             return await DB.Find<Item, string>()
