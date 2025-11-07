@@ -33,13 +33,19 @@ namespace IdentityServer
                 {
                     ClientId = "angularApp",
                     ClientName = "angularApp",
-                    ClientSecrets = new[] {new Secret("secret".Sha256())},
-                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
-                    RequirePkce = false,
-                    RedirectUris = {"http://localhost:3000/api/auth/callback/id-server"},
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+                    RequireClientSecret = false,
+                    RedirectUris = {"http://localhost:4200"},
+                    PostLogoutRedirectUris = { "http://localhost:4200" },
+                    AllowedCorsOrigins = { "http://localhost:4200"},
                     AllowOfflineAccess = true,
                     AllowedScopes = {"openid", "profile", "auctionApp"},
-                    AccessTokenLifetime = 3600*24*30
+                    RequireConsent = false,
+                    FrontChannelLogoutUri = "http://localhost:4200/logout",
+                    FrontChannelLogoutSessionRequired = true,
+                    AccessTokenLifetime = 3600,
+                    AlwaysIncludeUserClaimsInIdToken = true
                 }
             };
     }

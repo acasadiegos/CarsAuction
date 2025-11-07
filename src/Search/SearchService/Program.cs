@@ -18,7 +18,7 @@ builder.Services.AddControllers(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddInjectionInfraestructure();
+builder.Services.AddInjectionInfraestructure(builder.Configuration);
 builder.Services.AddInjectionApplication();
 
 var app = builder.Build();

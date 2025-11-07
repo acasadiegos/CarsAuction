@@ -24,11 +24,13 @@ namespace Infraestructure.Services
         public async Task<IReadOnlyList<Item>> GetItemsForSearchDb()
         {
             string lastUpdated = await _unitOfWork.ItemRepository.GetLastUpdatedDateString();
+
             string baseUrl = _configuration["Services:Auction:Url"];
             string endpoint = _configuration["Services:Auction:Endpoints:Search"];
+
             ItemFiltersDto filtersRequest = new ItemFiltersDto
             {
-                StartDate = lastUpdated,
+                StartDate = !string.IsNullOrEmpty(lastUpdated) ? lastUpdated : "1990-01-01",
                 EndDate = DateTime.UtcNow.ToString()
             };
 

@@ -1,9 +1,7 @@
-using Duende.IdentityModel;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Services;
 using IdentityServer.Models;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,72 +29,51 @@ namespace IdentityServer.Pages.Logout
 
         public async Task<IActionResult> OnGet(string? logoutId)
         {
-            LogoutId = logoutId;
+            // Obtener el contexto de logout
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
 
-            var showLogoutPrompt = LogoutOptions.ShowLogoutPrompt;
-
-            if (User.Identity?.IsAuthenticated != true)
+            // Si ShowSignoutPrompt es false, hacer logout automático
+            if (context?.ShowSignoutPrompt == false)
             {
-                // if the user is not authenticated, then just show logged out page
-                showLogoutPrompt = false;
-            }
-            else
-            {
-                var context = await _interaction.GetLogoutContextAsync(LogoutId);
-                if (context?.ShowSignoutPrompt == false)
-                {
-                    // it's safe to automatically sign-out
-                    showLogoutPrompt = false;
-                }
+                // Hacer logout automáticamente sin mostrar la página
+                return await OnPost(logoutId);
             }
 
-            if (showLogoutPrompt == false)
+            // Si no hay contexto válido, hacer logout de todas formas
+            if (string.IsNullOrEmpty(logoutId))
             {
-                // if the request for logout was properly authenticated from IdentityServer, then
-                // we don't need to show the prompt and can just log the user out directly.
-                return await OnPost();
+                return await OnPost(logoutId);
             }
 
+            // Mostrar la página de logout solo si es necesario
             return Page();
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPost(string logoutId)
         {
-            if (User.Identity?.IsAuthenticated == true)
+            // Hacer logout del usuario
+            if (User?.Identity?.IsAuthenticated == true)
             {
-                // if there's no current logout context, we need to create one
-                // this captures necessary info from the current logged in user
-                // this can still return null if there is no context needed
-                LogoutId ??= await _interaction.CreateLogoutContextAsync();
-
-                // delete local authentication cookie
+                // Eliminar la cookie de autenticación
                 await _signInManager.SignOutAsync();
 
-                // see if we need to trigger federated logout
-                var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
-
-                // raise the logout event
-                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
-                Telemetry.Metrics.UserLogout(idp);
-
-                // if it's a local login we can ignore this workflow
-                if (idp != null && idp != Duende.IdentityServer.IdentityServerConstants.LocalIdentityProvider)
-                {
-                    // we need to see if the provider supports external logout
-                    if (await HttpContext.GetSchemeSupportsSignOutAsync(idp))
-                    {
-                        // build a return URL so the upstream provider will redirect back
-                        // to us after the user has logged out. this allows us to then
-                        // complete our single sign-out processing.
-                        var url = Url.Page("/Account/Logout/Loggedout", new { logoutId = LogoutId });
-
-                        // this triggers a redirect to the external provider for sign-out
-                        return SignOut(new AuthenticationProperties { RedirectUri = url }, idp);
-                    }
-                }
+                // Registrar el evento de logout
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(
+                    User.GetSubjectId(),
+                    User.GetDisplayName()));
             }
 
-            return RedirectToPage("/Account/Logout/LoggedOut", new { logoutId = LogoutId });
+            // Obtener el contexto de logout nuevamente
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+
+            // Redirigir al PostLogoutRedirectUri si existe
+            if (!string.IsNullOrEmpty(context?.PostLogoutRedirectUri))
+            {
+                return Redirect(context.PostLogoutRedirectUri);
+            }
+
+            // Si no hay PostLogoutRedirectUri, redirigir al home
+            return Redirect("~/");
         }
     }
 }
