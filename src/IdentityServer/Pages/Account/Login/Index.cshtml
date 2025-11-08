@@ -1,89 +1,135 @@
 ﻿@page
 @model IdentityServer.Pages.Login.Index
 
-<div class="login-page">
+<div class="min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-6xl">
+        <div class="grid grid-cols-1 @(Model.View.EnableLocalLogin && Model.View.VisibleExternalProviders.Any() ? "lg:grid-cols-2" : "") gap-6">
 
-    <partial name="_ValidationSummary" />
+            @if (Model.View.EnableLocalLogin)
+            {
+                <div class="@(Model.View.VisibleExternalProviders.Any() ? "" : "max-w-md mx-auto w-full")">
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <h2 class="card-title text-3xl mb-6">
+                                <i class="fa-solid fa-right-to-bracket text-primary"></i>
+                                Login
+                            </h2>
 
-    <div class="row">
+                            <!-- Mueve el ValidationSummary AQUÍ, dentro del card -->
+                            <partial name="_ValidationSummary" />
 
-        @if (Model.View.EnableLocalLogin)
-        {
-            <div class="col-6 offset-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Login</h2>
-                    </div>
+                            <form asp-page="/Account/Login/Index" class="space-y-4">
+                                <input type="hidden" asp-for="Input.ReturnUrl" />
 
-                    <div class="card-body">
-                        <form asp-page="/Account/Login/Index">
-                            <input type="hidden" asp-for="Input.ReturnUrl" />
+                                <div class="form-control">
+                                    <label class="label" asp-for="Input.Username">
+                                        <span class="label-text font-semibold">Username</span>
+                                    </label>
+                                    <input class="input input-bordered w-full" placeholder="Username" asp-for="Input.Username" autofocus>
+                                </div>
 
-                            <div class="form-group">
-                                <label asp-for="Input.Username"></label>
-                                <input class="form-control" placeholder="Username" asp-for="Input.Username" autofocus>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Input.Password"></label>
-                                <input type="password" class="form-control" placeholder="Password" asp-for="Input.Password" autocomplete="off">
-                            </div>
-                            
-                            @if (Model.View.AllowRememberLogin)
-                            {
-                                <div class="form-group">
-                                    <div class="form-check">
-                                        <input class="form-check-input" asp-for="Input.RememberLogin">
-                                        <label class="form-check-label" asp-for="Input.RememberLogin">
-                                            Remember My Login
+                                <div class="form-control">
+                                    <label class="label" asp-for="Input.Password">
+                                        <span class="label-text font-semibold">Password</span>
+                                    </label>
+                                    <input type="password" class="input input-bordered w-full" placeholder="Password" asp-for="Input.Password" autocomplete="off">
+                                </div>
+
+                                @if (Model.View.AllowRememberLogin)
+                                {
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer justify-start gap-3">
+                                            <input type="checkbox" class="checkbox checkbox-primary" asp-for="Input.RememberLogin">
+                                            <span class="label-text">Remember my Login</span>
                                         </label>
                                     </div>
-                                </div>
-                            }
+                                }
 
-                            <a class="pb-2 d-block" asp-page="../Register/Index" asp-route-returnUrl="@Model.Input.ReturnUrl">
-                                New User? Register here
-                            </a>
-                            
-                            <button class="btn btn-primary" name="Input.Button" value="login">Login</button>
-                            <button class="btn btn-secondary" name="Input.Button" value="cancel">Cancel</button>
-                        </form>
+                                <div class="pt-2">
+                                    <a class="link link-primary text-sm" asp-page="../Register/Index" asp-route-returnUrl="@Model.Input.ReturnUrl">
+                                        <i class="fa-solid fa-user-plus"></i>
+                                        New User? Register here
+                                    </a>
+                                </div>
+
+                                <div class="card-actions justify-end pt-4 gap-2">
+                                    <button class="btn btn-ghost" name="Input.Button" value="cancel">
+                                        Cancel
+                                    </button>
+
+                                    <button class="btn btn-primary" name="Input.Button" value="login">
+                                        <i class="fa-solid fa-arrow-right"></i> Login
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
 
-        @if (Model.View.VisibleExternalProviders.Any())
-        {
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>External Account</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-inline">
-                            @foreach (var provider in Model.View.VisibleExternalProviders)
-                            {
-                                <li class="list-inline-item">
-                                    <a class="btn btn-secondary"
+            @if (Model.View.VisibleExternalProviders.Any())
+            {
+                <div class="@(Model.View.EnableLocalLogin ? "" : "max-w-md mx-auto w-full")">
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <h2 class="card-title text-3xl mb-6">
+                                <i class="fa-solid fa-users text-secondary"></i>
+                                External Account
+                            </h2>
+
+                            <p class="text-sm opacity-70 mb-4">
+                                Sign in with your external account provider
+                            </p>
+
+                            <div class="space-y-3">
+                                @foreach (var provider in Model.View.VisibleExternalProviders)
+                                {
+                                    <a class="btn btn-outline btn-secondary w-full justify-start"
                                        asp-page="/ExternalLogin/Challenge"
                                        asp-route-scheme="@provider.AuthenticationScheme"
                                        asp-route-returnUrl="@Model.Input.ReturnUrl">
-                                        @provider.DisplayName
+                                        @switch (provider.DisplayName.ToLower())
+                                        {
+                                            case var name when name.Contains("google"):
+                                                <i class="fa-brands fa-google text-lg"></i>
+                                                break;
+                                            case var name when name.Contains("facebook"):
+                                                <i class="fa-brands fa-facebook text-lg"></i>
+                                                break;
+                                            case var name when name.Contains("microsoft"):
+                                                <i class="fa-brands fa-microsoft text-lg"></i>
+                                                break;
+                                            case var name when name.Contains("github"):
+                                                <i class="fa-brands fa-github text-lg"></i>
+                                                break;
+                                            case var name when name.Contains("twitter"):
+                                                <i class="fa-brands fa-twitter text-lg"></i>
+                                                break;
+                                            default:
+                                                <i class="fa-solid fa-right-to-bracket text-lg"></i>
+                                                break;
+                                        }
+                                        <span>Continue with @provider.DisplayName</span>
                                     </a>
-                                </li>
-                            }
-                        </ul>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
 
-        @if (!Model.View.EnableLocalLogin && !Model.View.VisibleExternalProviders.Any())
-        {
-            <div class="alert alert-warning">
-                <strong>Invalid login request</strong>
-                There are no login schemes configured for this request.
-            </div>
-        }
+            @if (!Model.View.EnableLocalLogin && !Model.View.VisibleExternalProviders.Any())
+            {
+                <div class="col-span-full">
+                    <div class="alert alert-warning shadow-lg">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                        <div>
+                            <h3 class="font-bold">Invalid login request</h3>
+                            <div class="text-sm">There are no login schemes configured for this request.</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>

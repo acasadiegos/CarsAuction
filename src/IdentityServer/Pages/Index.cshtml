@@ -1,46 +1,117 @@
 @page
 @model IdentityServer.Pages.Home.Index
 
-<div class="welcome-page">
-    <h1>
-        <img src="~/duende-logo.svg" class="logo">
-        Welcome to Duende IdentityServer
-        <small class="text-muted">(version @Model.Version)</small>
-    </h1>
+<div class="max-w-5xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex items-center gap-4 mb-8">
+        <img src="~/duende-logo.svg" class="w-16 h-16 object-contain" alt="Duende Logo">
+        <div>
+            <h1 class="text-4xl font-bold text-base-content">
+                Welcome to Duende IdentityServer
+            </h1>
+            <p class="text-sm text-base-content/60 mt-1">version @Model.Version</p>
+        </div>
+    </div>
 
-    <ul>
-        <li>
-            IdentityServer publishes a
-            <a href="~/.well-known/openid-configuration">discovery document</a>
-            where you can find metadata and links to all the endpoints, key material, etc.
-        </li>
-        <li>
-            Click <a href="~/diagnostics">here</a> to see the claims for your current session.
-        </li>
-        <li>
-            Click <a href="~/grants">here</a> to manage your stored grants.
-        </li>
-        <li>
-            Click <a href="~/serversidesessions">here</a> to view the server side sessions.
-        </li>
-        <li>
-            Click <a href="~/ciba/all">here</a> to view your pending CIBA login requests.
-        </li>
-        <li>
-            Here are links to the
-            <a href="https://github.com/duendesoftware/IdentityServer">source code repository</a>,
-            and <a href="https://github.com/duendesoftware/samples">ready to use samples</a>.
-        </li>
-    </ul>
+    <!-- Links Card -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Quick Links</h2>
 
-    @if(Model.License != null)
+            <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-book text-primary text-xl mt-1"></i>
+                    <p class="flex-1">
+                        IdentityServer publishes a
+                        <a href="~/.well-known/openid-configuration" class="link link-primary font-medium">
+                            discovery document
+                        </a>
+                        where you can find metadata and links to all the endpoints, key material, etc.
+                    </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-clipboard-list text-secondary text-xl mt-1"></i>
+                    <p class="flex-1">
+                        Click
+                        <a href="~/diagnostics" class="link link-secondary font-medium">here</a>
+                        to see the claims for your current session.
+                    </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-key text-accent text-xl mt-1"></i>
+                    <p class="flex-1">
+                        Click
+                        <a href="~/grants" class="link link-accent font-medium">here</a>
+                        to manage your stored grants.
+                    </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-server text-info text-xl mt-1"></i>
+                    <p class="flex-1">
+                        Click
+                        <a href="~/serversidesessions" class="link link-info font-medium">here</a>
+                        to view the server side sessions.
+                    </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-clock text-warning text-xl mt-1"></i>
+                    <p class="flex-1">
+                        Click
+                        <a href="~/ciba/all" class="link link-warning font-medium">here</a>
+                        to view your pending CIBA login requests.
+                    </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <i class="fa-brands fa-github text-base-content text-xl mt-1"></i>
+                    <p class="flex-1">
+                        Here are links to the
+                        <a href="https://github.com/duendesoftware/IdentityServer" class="link link-primary font-medium" target="_blank">
+                            source code repository
+                        </a>, and
+                        <a href="https://github.com/duendesoftware/samples" class="link link-primary font-medium" target="_blank">
+                            ready to use samples
+                        </a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- License Info Card -->
+    @if (Model.License != null)
     {
-        <h2>License</h2>
-        <dl>
-            <dt>Serial Number</dt>
-            <dd>@Model.License.SerialNumber</dd>
-            <dt>Expiration</dt>
-            <dd>@Model.License.Expiration!.Value.ToLongDateString()</dd>
-        </dl>
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">
+                    <i class="fa-solid fa-certificate text-success"></i>
+                    License Information
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Serial Number</span>
+                        </label>
+                        <div class="bg-base-200 p-3 rounded-lg font-mono text-sm">
+                            @Model.License.SerialNumber
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Expiration</span>
+                        </label>
+                        <div class="bg-base-200 p-3 rounded-lg">
+                            @Model.License.Expiration!.Value.ToLongDateString()
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 </div>

@@ -1,65 +1,94 @@
 @page
 @model IdentityServer.Pages.Diagnostics.Index
 
-<div class="diagnostics-page">
-    <div class="lead">
-        <h1>Authentication Cookie</h1>
+<div class="container mx-auto px-4 py-10">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold flex items-center gap-3">
+            <i class="fa-solid fa-stethoscope text-primary"></i>
+            Authentication Cookie
+        </h1>
+        <p class="text-base-content/60 mt-2">View your current authentication session details</p>
     </div>
 
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Claims</h2>
-                </div>
-                <div class="card-body">
-                    @if(Model.View.AuthenticateResult.Principal != null)
-                    {
-                        <dl>
+    <!-- Two Column Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Claims Card -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">
+                    <i class="fa-solid fa-id-card text-secondary"></i>
+                    Claims
+                </h2>
+
+                @if (Model.View.AuthenticateResult.Principal != null)
+                {
+                    <div class="overflow-x-auto">
+                        <div class="space-y-3">
                             @foreach (var claim in Model.View.AuthenticateResult.Principal.Claims)
                             {
-                                <dt>@claim.Type</dt>
-                                <dd>@claim.Value</dd>
+                                <div class="border-l-4 border-primary pl-4 py-2">
+                                    <dt class="text-sm font-semibold text-primary opacity-80">@claim.Type</dt>
+                                    <dd class="text-base mt-1 break-all">@claim.Value</dd>
+                                </div>
                             }
-                        </dl>
-                    }
-                </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-info-circle"></i>
+                        <span>No claims available</span>
+                    </div>
+                }
             </div>
         </div>
-        
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Properties</h2>
-                </div>
-                <div class="card-body">
-                    <dl>
-                        @if (Model.View.AuthenticateResult.Properties != null)
+
+        <!-- Properties Card -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">
+                    <i class="fa-solid fa-sliders text-accent"></i>
+                    Properties
+                </h2>
+
+                <div class="space-y-3">
+                    @if (Model.View.AuthenticateResult.Properties != null)
+                    {
+                        @foreach (var prop in Model.View.AuthenticateResult.Properties.Items)
                         {
-                            @foreach (var prop in Model.View.AuthenticateResult.Properties.Items)
-                            {
-                                <dt>@prop.Key</dt>
-                                <dd>@prop.Value</dd>
-                            }
+                            <div class="border-l-4 border-accent pl-4 py-2">
+                                <dt class="text-sm font-semibold text-accent opacity-80">@prop.Key</dt>
+                                <dd class="text-base mt-1 break-all">@prop.Value</dd>
+                            </div>
                         }
-                        @if (Model.View.Clients.Any())
-                        {
-                            <dt>Clients</dt>
-                            <dd>
+                    }
+
+                    @if (Model.View.Clients.Any())
+                    {
+                        <div class="border-l-4 border-accent pl-4 py-2">
+                            <dt class="text-sm font-semibold text-accent opacity-80">Clients</dt>
+                            <dd class="text-base mt-1">
                                 @{
                                     var clients = Model.View.Clients.ToArray();
-                                    for(var i = 0; i < clients.Length; i++)
+                                    for (var i = 0; i < clients.Length; i++)
                                     {
-                                        <text>@clients[i]</text>
-                                        if (i < clients.Length - 1)
-                                        {
-                                            <text>, </text>
-                                        }
+                                        <span class="badge badge-accent badge-outline mr-2">@clients[i]</span>
                                     }
                                 }
                             </dd>
-                        }
-                    </dl>
+                        </div>
+                    }
+
+                    @if ((Model.View.AuthenticateResult.Properties == null || !Model.View.AuthenticateResult.Properties.Items.Any()) && !Model.View.Clients.Any())
+                    {
+                        <div class="alert alert-info">
+                            <i class="fa-solid fa-info-circle"></i>
+                            <span>No properties available</span>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

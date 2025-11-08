@@ -1,54 +1,100 @@
 ﻿@page
 @model IdentityServer.Pages.Register.Index
 
-<div>
-    <partial name="_ValidationSummary" />
+<div class="min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-md">
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-3xl mb-6">
+                    <i class="fa-solid fa-user-plus text-primary"></i>
+                    Register
+                </h2>
 
-    <div class="row">
-        <div class="col-6 offset-3">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Register</h2>
-                </div>
-                <div class="card-body">
-                    <form asp-page="/Account/Register/Index">
-                        <input type="hidden" asp-for="Input.ReturnUrl" />
+                <!-- Validation Summary -->
+                <partial name="_ValidationSummary" />
 
-                        <div class="form-group">
-                            <label asp-for="Input.Username"></label>
-                            <input class="form-control" placeholder="Username" asp-for="Input.Username" autofocus>
+                <!-- Success Message -->
+                @if (Model.RegisterSuccess)
+                {
+                    <div class="alert alert-success mb-4">
+                        <i class="fa-solid fa-circle-check text-xl"></i>
+                        <div>
+                            <h3 class="font-bold">Successfully registered!</h3>
+                            <div class="text-sm">You can now login</div>
                         </div>
+                    </div>
+                }
 
-                        <div class="form-group">
-                            <label asp-for="Input.Email"></label>
-                            <input class="form-control" placeholder="Email" asp-for="Input.Email">
-                        </div>
+                <form asp-page="/Account/Register/Index" class="space-y-4">
+                    <input type="hidden" asp-for="Input.ReturnUrl" />
 
-                        <div class="form-group">
-                            <label asp-for="Input.FullName"></label>
-                            <input class="form-control" placeholder="Full name" asp-for="Input.FullName">
-                        </div>
+                    <!-- Username -->
+                    <div class="form-control">
+                        <label class="label" asp-for="Input.Username">
+                            <span class="label-text font-semibold">Username</span>
+                        </label>
+                        <input class="input input-bordered w-full"
+                               placeholder="Username"
+                               asp-for="Input.Username"
+                               autofocus>
+                    </div>
 
-                        <div class="form-group">
-                            <label asp-for="Input.Password"></label>
-                            <input type="password" class="form-control" placeholder="Password" asp-for="Input.Password" autocomplete="off">
-                        </div>
+                    <!-- Email -->
+                    <div class="form-control">
+                        <label class="label" asp-for="Input.Email">
+                            <span class="label-text font-semibold">Email</span>
+                        </label>
+                        <input type="email"
+                               class="input input-bordered w-full"
+                               placeholder="email@example.com"
+                               asp-for="Input.Email">
+                    </div>
 
-                        <a class="pb-2 d-block" asp-page="../Login/Index" asp-route-returnUrl="@Model.Input.ReturnUrl">
+                    <!-- Full Name -->
+                    <div class="form-control">
+                        <label class="label" asp-for="Input.FullName">
+                            <span class="label-text font-semibold">Full Name</span>
+                        </label>
+                        <input class="input input-bordered w-full"
+                               placeholder="John Doe"
+                               asp-for="Input.FullName">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-control">
+                        <label class="label" asp-for="Input.Password">
+                            <span class="label-text font-semibold">Password</span>
+                        </label>
+                        <input type="password"
+                               class="input input-bordered w-full"
+                               placeholder="Password"
+                               asp-for="Input.Password"
+                               autocomplete="off">
+                    </div>
+
+                    <!-- Login Link -->
+                    <div class="pt-2">
+                        <a class="link link-primary text-sm"
+                           asp-page="../Login/Index"
+                           asp-route-returnUrl="@Model.Input.ReturnUrl">
+                            <i class="fa-solid fa-right-to-bracket"></i>
                             Already registered? Login here
                         </a>
+                    </div>
 
-                        <button class="btn btn-primary" name="Input.Button" value="register">Register</button>
-                        <button class="btn btn-secondary" name="Input.Button" value="cancel">Cancel</button>
-                    </form>
-                </div>
-
-                @if(Model.RegisterSuccess)
-                {
-                   <div class="alert alert-success mt-2">
-                       <strong>Sucessfully registered</strong> - You can now login
-                   </div> 
-                }
+                    <!-- Buttons -->
+                    <div class="card-actions justify-end pt-4 gap-2">
+                        <a href="@Model.Input.ReturnUrl" class="btn btn-ghost">
+                            Cancel
+                        </a>
+                        <button class="btn btn-primary"
+                                name="Input.Button"
+                                value="register">
+                            <i class="fa-solid fa-user-plus"></i>
+                            Register
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

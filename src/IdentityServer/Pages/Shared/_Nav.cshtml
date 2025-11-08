@@ -1,6 +1,6 @@
 @using Duende.IdentityServer.Extensions
 @{
-    #nullable enable
+#nullable enable
     string? name = null;
     if (!true.Equals(ViewData["signed-out"]))
     {
@@ -8,26 +8,32 @@
     }
 }
 
-<div class="nav-page">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-        <a class="navbar-brand d-flex align-items-center">
-            <img src="~/car.svg" class="icon-banner mr-2">
-            <span>CarsAuction Identity SSO</span>
+<nav class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+        <a class="btn btn-ghost text-xl">
+            <i class="fa-solid fa-car"></i>
+            CarsAuction Identity SSO
         </a>
+    </div>
 
+    <div class="flex-none">
         @if (!string.IsNullOrWhiteSpace(name))
         {
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
-                    
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" asp-page="/Account/Logout/Index">Logout</a>
-                    </div>
-              </li>
-            </ul>
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost gap-2">
+                    <i class="fa-solid fa-user"></i>
+                    <span>@name</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-xl mt-3">
+                    <li>
+                        <a asp-page="/Account/Logout/Index" class="gap-2">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
         }
-    
-    </nav>
-</div>
+    </div>
+</nav>

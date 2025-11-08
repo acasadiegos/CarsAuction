@@ -1,7 +1,18 @@
 ﻿@if (ViewContext.ModelState.IsValid == false)
 {
-    <div class="alert alert-danger">
-        <strong>Error</strong>
-        <div asp-validation-summary="All" class="danger"></div>
+    <div class="alert alert-error mb-6">
+        <i class="fa-solid fa-circle-exclamation text-xl"></i>
+        <div>
+            <h3 class="font-bold">Error</h3>
+            <div class="text-sm">
+                @foreach (var modelState in ViewContext.ModelState.Values)
+                {
+                    @foreach (var error in modelState.Errors)
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                }
+            </div>
+        </div>
     </div>
 }
