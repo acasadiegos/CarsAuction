@@ -5,8 +5,10 @@ using Application.Interfaces;
 using Application.Messaging.Interfaces;
 using Application.Validators.Auction;
 using AutoMapper;
+using AutoMapper.Internal;
 using Contracts;
 using Domain.Entities;
+using FluentValidation;
 using System.Net;
 using Utilities.Static;
 
@@ -16,13 +18,13 @@ namespace Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly CreateAuctionValidator _createAuctionValidator;
-        private readonly UpdateAuctionValidator _updateAuctionValidator;
-        private readonly AuctionFiltersValidator _auctionFiltersValidator;
+        private readonly IValidator<CreateAuctionDto> _createAuctionValidator;
+        private readonly IValidator<UpdateAuctionDto> _updateAuctionValidator;
+        private readonly IValidator<AuctionFiltersDto> _auctionFiltersValidator;
         private readonly IMessagerPublisher _messagerPublisher;
 
-        public AuctionApplication(IUnitOfWork unitOfWork, IMapper mapper, CreateAuctionValidator createAuctionValidator,
-            UpdateAuctionValidator updateAuctionValidator, AuctionFiltersValidator auctionFiltersValidator, IMessagerPublisher messagerPublisher)
+        public AuctionApplication(IUnitOfWork unitOfWork, IMapper mapper, IValidator<CreateAuctionDto> createAuctionValidator,
+            IValidator<UpdateAuctionDto> updateAuctionValidator, IValidator<AuctionFiltersDto> auctionFiltersValidator, IMessagerPublisher messagerPublisher)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -49,7 +51,7 @@ namespace Application.Services
 
             var auctions = await _unitOfWork.Auction.ListAuctions(filters);
 
-            if (auctions is not null && auctions.Items.Count > 0)
+            if (auctions is not null && auctions.Items is not null && auctions.Items.Count > 0)
             {
                 response.IsSuccess = true;
                 response.Data = _mapper.Map<BaseEntityResponse<AuctionDto>>(auctions);
@@ -199,19 +201,19 @@ namespace Application.Services
 
             var auction = await _unitOfWork.Auction.GetAuctionById(auctionId);
 
-            if (auction.Seller != username)
-            {
-                response.IsSuccess = false;
-                response.Message = ReplyMessage.MESSAGE_FORBID;
-                response.StatusCode = HttpStatusCode.Forbidden;
-                return response;
-            }
-
             if (auction == null)
             {
                 response.IsSuccess = false;
                 response.Message = ReplyMessage.MESSAGE_QUERY_EMPTY;
                 response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
+            if (auction.Seller != username)
+            {
+                response.IsSuccess = false;
+                response.Message = ReplyMessage.MESSAGE_FORBID;
+                response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
 

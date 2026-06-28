@@ -2,14 +2,14 @@
 {
     public class ReplyMessage
     {
-        public const string MESSAGE_QUERY = "Consulta exitosa";
-        public const string MESSAGE_QUERY_EMPTY = "No se encontraron registros.";
-        public const string MESSAGE_SAVE = "Se registró correctamente.";
-        public const string MESSAGE_UPDATE = "Se actualizó correctamente.";
-        public const string MESSAGE_DELETE = "Se eliminó correctamente";
-        public const string MESSAGE_FAILED = "Operación fallida";
-        public const string MESSAGE_VALIDATE = "Errores de validación";
-        public const string MESSAGE_FORBID = "El usuario no tiene permitido realizar acciones sobre este recurso";
+        public const string MESSAGE_QUERY = "Successful query.";
+        public const string MESSAGE_QUERY_EMPTY = "No records were found.";
+        public const string MESSAGE_SAVE = "Successfully created";
+        public const string MESSAGE_UPDATE = "Successfully updated";
+        public const string MESSAGE_DELETE = "Successfully deleted";
+        public const string MESSAGE_FAILED = "Failed operation";
+        public const string MESSAGE_VALIDATE = "Validation errors";
+        public const string MESSAGE_FORBID = "The user is not allowed to perform any actions on this resource.";
 
     }
 }

@@ -2,9 +2,9 @@
 {
     public class RepplyMessage
     {
-        public const string MESSAGE_QUERY = "Consulta exitosa";
-        public const string MESSAGE_QUERY_EMTPY = "No se encontraron registros";
-        public const string MESSAGE_VALIDATE = "Errores de validación";
-        public const string MESSAGE_FAILED = "Operación fallida";
+        public const string MESSAGE_QUERY = "Successful query.";
+        public const string MESSAGE_QUERY_EMTPY = "No records were found.";
+        public const string MESSAGE_FAILED = "Failed operation";
+        public const string MESSAGE_VALIDATE = "Validation errors";
     }
 }
